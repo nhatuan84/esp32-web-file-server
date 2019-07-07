@@ -41,11 +41,12 @@ String serverIndex = "<script src='https://ajax.googleapis.com/ajax/libs/jquery/
 "});"
 "</script>";
 
-const char* ssid = "707";
-const char* password = "0000000000";
+const char* ssid = "TRUONG AN";
+const char* password = "0909505150";
 
 ESP32WebServer server(80);
 File root;
+bool opened = false;
 
 String printDirectory(File dir, int numTabs) {
   String response = "";
@@ -152,19 +153,24 @@ void setup(void){
     server.sendHeader("Connection", "close");
   },[](){
     HTTPUpload& upload = server.upload();
-    if(upload.status == UPLOAD_FILE_START){
-      Serial.printf("Upload: %s\n", upload.filename.c_str());
-    } else if(upload.status == UPLOAD_FILE_WRITE){
-      File file = SD.open((String("/") + upload.filename).c_str(), FILE_WRITE);
-      if(!file){
+    if(opened == false){
+      opened = true;
+      root = SD.open(upload.filename.c_str(), FILE_WRITE);  
+      if(!root){
         Serial.println("- failed to open file for writing");
         return;
       }
-      if(file.write(upload.buf, upload.currentSize) != upload.currentSize){
+    } 
+    if(upload.status == UPLOAD_FILE_WRITE){
+      remove((String("/") + upload.filename).c_str());
+      if(root.write(upload.buf, upload.currentSize) != upload.currentSize){
         Serial.println("- failed to write");
         return;
       }
     } else if(upload.status == UPLOAD_FILE_END){
+      root.close();
+      Serial.println("UPLOAD_FILE_END");
+      opened = false;
     }
   });
   server.begin();
