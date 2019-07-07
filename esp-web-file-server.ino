@@ -41,8 +41,8 @@ String serverIndex = "<script src='https://ajax.googleapis.com/ajax/libs/jquery/
 "});"
 "</script>";
 
-const char* ssid = "TRUONG AN";
-const char* password = "0909505150";
+const char* ssid = "ssid";
+const char* password = "pass";
 
 ESP32WebServer server(80);
 File root;
@@ -151,6 +151,7 @@ void setup(void){
   /*handling uploading file */
   server.on("/update", HTTP_POST, [](){
     server.sendHeader("Connection", "close");
+      opened = false;
   },[](){
     HTTPUpload& upload = server.upload();
     if(opened == false){
