@@ -156,14 +156,13 @@ void setup(void){
     HTTPUpload& upload = server.upload();
     if(opened == false){
       opened = true;
-      root = SD.open(upload.filename.c_str(), FILE_WRITE);  
+      root = SD.open((String("/") + upload.filename).c_str(), FILE_WRITE);  
       if(!root){
         Serial.println("- failed to open file for writing");
         return;
       }
     } 
     if(upload.status == UPLOAD_FILE_WRITE){
-      remove((String("/") + upload.filename).c_str());
       if(root.write(upload.buf, upload.currentSize) != upload.currentSize){
         Serial.println("- failed to write");
         return;
